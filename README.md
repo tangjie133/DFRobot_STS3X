@@ -80,31 +80,43 @@ To use this library, first download the library file, paste it into the \Arduino
   
   /*!
    *@brief 获取校验和状态
+   *@return true: checksum of last write transfer was correct
+   *@n      false: checksum of last write transfer failed
    */
   bool checkSumStatus();
   
   /*!
    *@brief 获取指令状态
+   *@return true: last command executed successfully
+   *@n      false: last command not processed.
    */
   bool commandStatus();
   
   /*!
    *@brief 检测系统是否重置
+   *@return true: no reset detected since last 'clear status register' command
+   *@n      false: reset detected (hard reset, soft reset command or supply fail)
    */
   bool systemResetDetected();
   
   /*!
    *@brief 温度跟踪提醒
+   *@return true: no alert
+   *@n      false: alert
    */
   bool temTrackingAlert();
   
   /*!
    *@brief 获取加热器状态
+   *@return true: Heater OFF
+   *@n      false: Heater ON
    */
   bool heaterStatus();
   
   /*!
    *@brief 获取警报待处理状态
+   *@return true: no pending alerts
+   *@n      false: at least one pending alert
    */
   bool alertPendingStatus();
   /*!
