@@ -1,0 +1,43 @@
+#######################################
+# Syntax Coloring DFRobot_CCS811
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+DFRobot_DS323X	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin	KEYWORD2
+setAddress	KEYWORD2
+setRepeat	KEYWORD2
+setStretch	KEYWORD2
+setFreq	KEYWORD2
+setHeaterOn	KEYWORD2
+setHeaterOff	KEYWORD2
+checkSumStatus	KEYWORD2
+commandStatus	KEYWORD2
+systemResetDetected	KEYWORD2
+temTrackingAlert	KEYWORD2
+heaterStatus	KEYWORD2
+alertPendingStatus	KEYWORD2
+getTemperature	KEYWORD2
+getTemperatureC	KEYWORD2
+reset	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+eHigh	LITERAL1
+eMedium	LITERAL1
+eLow	LITERAL1
+e2S	LITERAL1
+e1Hz	LITERAL1
+e2Hz	LITERAL1
+e4Hz	LITERAL1
+e10Hz	LITERAL1
