@@ -1,9 +1,15 @@
 # DFRobot_STS3X
 * [English Version](./README.md)
 
-STS3x-DIS是Sensirion公司最新推出的高精度数字温度传感器。其功能
-包括增强的信号处理，两个独特的和用户可选择的I2C地址和
-高达1 MHz的通信速度。
+高精度数字温度传感器集成电路
+完全校准和线性化数字输出
+电源电压范围宽，从2.15 V到5.5 V
+I2C接口，通讯速度可达1
+MHz和两个用户可选地址
+精度可达0.1°C
+启动和测量时间非常快
+Tiny 8-pin DFN包
+NIST可追溯性。
 
 ![正反面svg效果图](https://github.com/ouki-wang/DFRobot_Sensor/raw/master/resources/images/SEN0245svg1.png)
 
