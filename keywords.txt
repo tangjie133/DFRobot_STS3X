@@ -13,21 +13,22 @@ DFRobot_DS323X	KEYWORD1
 #######################################
 
 begin	KEYWORD2
-setAddress	KEYWORD2
 setRepeat	KEYWORD2
 setStretch	KEYWORD2
 setFreq	KEYWORD2
 setHeaterOn	KEYWORD2
 setHeaterOff	KEYWORD2
+breakSensor	KEYWORD2
+resetSensor	KEYWORD2
+getStatus	KEYWORD2
 checkSumStatus	KEYWORD2
 commandStatus	KEYWORD2
 systemResetDetected	KEYWORD2
 temTrackingAlert	KEYWORD2
 heaterStatus	KEYWORD2
 alertPendingStatus	KEYWORD2
-getTemperature	KEYWORD2
-getTemperatureC	KEYWORD2
-reset	KEYWORD2
+getTemperatureSingleC	KEYWORD2
+getTemperaturePeriodC	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)

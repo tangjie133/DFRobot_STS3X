@@ -1,5 +1,5 @@
 # DFRobot_STS3X
-* [中文版](./README_CN.md)
+* [English Version](./README.md)
 
 STS3x-DIS是Sensirion公司最新推出的高精度数字温度传感器。其功能
 包括增强的信号处理，两个独特的和用户可选择的I2C地址和

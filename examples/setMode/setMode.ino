@@ -1,6 +1,6 @@
 /*!
  * @file setMode.ino
- * @brief 用户设置频率，地址，加热器等参数，读取温度
+ * @brief 用户采样重复率（过采样，提高数据精度，过滤错误数据）、时钟延展、加热器等参数，然后以单次测量模式获取温度数据
  *
  * @copyright	Copyright (c) 2010 DFRobot Co.Ltd (http://www.dfrobot.com)
  * @licence     The MIT License (MIT)
@@ -11,7 +11,12 @@
  */
 #include "DFRobot_STS3X.h"
 
-DFRobot_STS3X sts;
+/*!
+ * 根据ADDR引脚拉高或拉低来确定IIC地址
+ * ADDR引脚拉低： STS3X_IIC_ADDRESS_A   0x4A
+ * ADDR引脚拉高： STS3X_IIC_ADDRESS_B   0x4B
+ */
+DFRobot_STS3X sts(&Wire, STS3X_IIC_ADDRESS_A);
 
 
 void setup(void)
@@ -22,45 +27,38 @@ void setup(void)
         Serial.println("Failed to init chip, please check if the chip connection is fine. ");
         delay(1000);
     }
-    /*!
-     *@brief 设置IIC地址
-     *@param addr: 通过将ADDR引脚拉高或拉低来设置IIC地址
-      @n           STS3X_IIC_ADDRESS_A   0x4A
-      @n           STS3X_IIC_ADDRESS_B   0x4B
-     */
-    sts.setAddress(STS3X_IIC_ADDRESS_A);
-    
+
     /*!
      *@brief 设置重复模式
      *@param code: 在枚举变量eCode_t中选择eHigh，eMedium，eLow模式
      */
     sts.setRepeat(sts.eHigh);
-    
+
     /*!
-     *@brief 设置时钟延展
+     *@brief 设置时钟延展，开启时钟延展后，当传感器未测量完成时不会发送NAK，直到测量完成时才发送数据完成之前未完成的测量命令
      *@param clockStretch: 是否打开时钟延展，true表示打开，false表示关闭
      */
     sts.setStretch(true);
-    
+
     /*!
-     *@brief 设置测量频率
-     *@param freq: 在枚举变量eFreq_t中选择e2S，e1Hz，e2Hz，e4Hz，e10Hz模式
-     */
-    sts.setFreq(sts.e10Hz);
-    
-    /*!
-     *@brief 打开或关闭加热器
+     *@brief 打开或关闭加热器，提升传感器温度，可方便内部测试
      */
     sts.setHeaterOn();
     //sts.setHeaterOff();
+
+    /*!
+     *@brief 中断传感器正在进行的工作，强制使其进入空闲模式
+     */
+    sts.breakSensor();
+
     /*!
      *@brief 将参数设置回默认值
      */
-    //sts.reset();
+    //sts.resetSensor();
 }
 
 void loop() {
-    Serial.print(sts.getTemperature());
+    Serial.print(sts.getTemperatureSingleC());
     Serial.println(" ℃");
     delay(1000);
 }

@@ -1,17 +1,21 @@
 /*!
  * @file DFRobot_STS3X.cpp
  * @brief Define the basic structure of class DFRobot_STS3X
+ * 
  * @copyright	Copyright (c) 2010 DFRobot Co.Ltd (http://www.dfrobot.com)
  * @licence     The MIT License (MIT)
  * @author [yufeng](yufeng.luo@dfrobot.com)
  * @version  V1.0
- * @date  2021-2-23
+ * @date  2021-09-01
  * @url https://github.com/DFRobot/DFRobot_STS3X
  */
 
 #include <DFRobot_STS3X.h>
-
-DFRobot_STS3X::~DFRobot_STS3X(){}
+DFRobot_STS3X::DFRobot_STS3X(TwoWire *pWire, uint8_t iicAddr)
+{
+    _pWire = pWire;
+    _deviceAddr = iicAddr;
+}
 
 bool DFRobot_STS3X::begin(void)
 {
@@ -19,18 +23,17 @@ bool DFRobot_STS3X::begin(void)
     delay(100);
     _pWire->beginTransmission(_deviceAddr);
     if(_pWire->endTransmission() == 0){
-        reset();
-        delay(100);
-        setFreq(e1Hz);
+        _repeat = eMedium;
+        _stretch = true;
+        resetSensor();
+        delay(10);
+        clearStatus();
+        delay(500);
         return true;
     }
     else{
         return false;
     }
-}
-
-void DFRobot_STS3X::setAddress(uint8_t addr = STS3X_IIC_ADDRESS_A){
-    _deviceAddr = addr;
 }
 
 void DFRobot_STS3X::setRepeat(eCode_t code){
@@ -126,7 +129,7 @@ void DFRobot_STS3X::setFreq(eFreq_t freq){
     writeCommand(cmd, 2);
 }
 
-float DFRobot_STS3X::getTemperature(){
+float DFRobot_STS3X::getTemperatureSingleC(){
     uint8_t cmd[2];
     switch (_stretch) {
         case true:
@@ -169,18 +172,22 @@ float DFRobot_STS3X::getTemperature(){
                 }
             break;
     }
+    writeCommand(cmd, 2);
     float result = 0.0;
     uint8_t buf[3];
     readData(buf, 3);
     uint16_t rawData = buf[0]<<8 | buf[1];
     uint8_t checkSum = buf[2];
+    DBG(rawData);
     if (calculateCrc(buf) == checkSum) {
         result = 175.0f * (float)rawData / 65535.0f - 45.0f;
+        DBG("result");
+        DBG(result);
     }
     return result;
 }
 
-float DFRobot_STS3X::getTemperatureC(){
+float DFRobot_STS3X::getTemperaturePeriodC(){
     uint8_t cmd[2] = {0xE0,0x00};
     writeCommand(cmd, 2);
     float result = 0.0;
@@ -229,60 +236,80 @@ void DFRobot_STS3X::setHeaterOff(){
     writeCommand(cmd, 2);
 }
 
-void DFRobot_STS3X::reset(){
+void DFRobot_STS3X::breakSensor(){
+    uint8_t cmd[2];
+    cmd[0] = STS3X_CMD_BREAK_MSB;
+    cmd[1] = STS3X_CMD_BREAK_LSB;
+    writeCommand(cmd, 2);
+}
+
+void DFRobot_STS3X::resetSensor(){
+    breakSensor();
     uint8_t cmd[2];
     cmd[0] = STS3X_CMD_SOFT_RESET_MSB;
     cmd[1] = STS3X_CMD_SOFT_RESET_LSB;
     writeCommand(cmd, 2);
 }
 
+void DFRobot_STS3X::clearStatus(){
+    uint8_t cmd[2];
+    cmd[0] = STS3X_CMD_CLEAR_STATUS_MSB;
+    cmd[1] = STS3X_CMD_CLEAR_STATUS_LSB;
+    writeCommand(cmd, 2);
+    _status = 0x0000;
+}
+
 void DFRobot_STS3X::getStatus(){
+    // breakSensor();
     uint8_t cmd[2];
     cmd[0] = STS3X_CMD_READ_STATUS_MSB;
     cmd[1] = STS3X_CMD_READ_STATUS_LSB;
     writeCommand(cmd, 2);
     uint8_t buf[2];
     readData(buf, 2);
-    status = buf[0]<<8 | buf[1];
+    DBG(_status);
+    _status = buf[0]<<8 | buf[1];
+    DBG(_status);
+    delay(100);
 }
 
 bool DFRobot_STS3X::checkSumStatus(){
-    if (status & 0x0001 == 0)
+    if ((_status & 0x0001) == 0)
         return true;
     else
         return false;
 }
 
 bool DFRobot_STS3X::commandStatus(){
-    if (status & 0x0002 == 0)
+    if ((_status & 0x0002) == 0)
         return true;
     else
         return false;
 }
 
 bool DFRobot_STS3X::systemResetDetected(){
-    if (status & 0x0010 == 0)
+    if ((_status & 0x0010) == 0)
         return true;
     else
         return false;
 }
 
 bool DFRobot_STS3X::temTrackingAlert(){
-    if (status & 0x0400 == 0)
+    if ((_status & 0x0400) == 0)
         return true;
     else
         return false;
 }
 
 bool DFRobot_STS3X::heaterStatus(){
-    if (status & 0x2000 == 0)
+    if ((_status & 0x2000) == 0)
         return true;
     else
         return false;
 }
 
 bool DFRobot_STS3X::alertPendingStatus(){
-    if (status & 0x8000 == 0)
+    if ((_status & 0x8000) == 0)
         return true;
     else
         return false;
@@ -319,6 +346,7 @@ void DFRobot_STS3X::writeCommand(const void *pBuf, size_t size) {
         _pWire->write(_pBuf[i]);
     }
     _pWire->endTransmission();
+    delay(100);
 }
 
 uint8_t DFRobot_STS3X::readData(const void *pBuf, size_t size) {
