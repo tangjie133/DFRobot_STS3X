@@ -10,7 +10,7 @@
  * @url https://github.com/DFRobot/DFRobot_STS3X
  */
 
-#include <DFRobot_STS3X.h>
+#include "DFRobot_STS3X.h"
 DFRobot_STS3X::DFRobot_STS3X(TwoWire *pWire, uint8_t iicAddr)
 {
     _pWire = pWire;
